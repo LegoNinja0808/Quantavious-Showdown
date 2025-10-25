@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quantavious Showdown</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="main-menu" class="menu-screen">
+    <h1>Quantavious Showdown</h1>
+
+    <div class="input-group">
+      <label>Player 1 Name:</label>
+      <input id="p1-name" type="text" placeholder="Enter name" />
+    </div>
+
+    <div class="input-group">
+      <label>Player 2 Name:</label>
+      <input id="p2-name" type="text" placeholder="Enter name" />
+    </div>
+
+    <div class="input-group">
+      <label>Number of Characters per Player:</label>
+      <select id="team-size">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Who Goes First:</label>
+      <select id="first-turn">
+        <option value="random">Random (50/50)</option>
+        <option value="player1">Player 1</option>
+        <option value="player2">Player 2</option>
+      </select>
+    </div>
+
+    <button id="start-btn">Start Battle</button>
+  </div>
+
+  <div id="battle-screen" class="hidden">
+    <div id="battle-log"></div>
+    <button id="history-btn">Battle History</button>
+    <button id="restart-btn">Restart</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
