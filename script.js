@@ -10,261 +10,249 @@ import armanAttacks from './characters/arman/commonattacks.js';
 import brodyAttacks from './characters/brody/commonattacks.js';
 import jonathanAttacks from './characters/jonathan/commonattacks.js';
 
-// ---------- Setup ----------
-const allCharacters = [
-  { info: Johan, attacks: johanAttacks },
-  { info: Micah, attacks: micahAttacks },
-  { info: Arman, attacks: armanAttacks },
-  { info: Brody, attacks: brodyAttacks },
-  { info: Jonathan, attacks: jonathanAttacks }
-];
+document.addEventListener("DOMContentLoaded", () => {
 
-// Inputs & buttons
-const p1Input = document.getElementById("p1-name");
-const p2Input = document.getElementById("p2-name");
-const firstTurnSelect = document.getElementById("first-turn");
-const startBtn = document.getElementById("start-btn");
-const restartBtn = document.getElementById("restart-btn");
-const historyBtn = document.getElementById("history-btn");
+  const allCharacters = [
+    { info: Johan, attacks: johanAttacks },
+    { info: Micah, attacks: micahAttacks },
+    { info: Arman, attacks: armanAttacks },
+    { info: Brody, attacks: brodyAttacks },
+    { info: Jonathan, attacks: jonathanAttacks }
+  ];
 
-const p1Div = document.getElementById("player1-team");
-const p2Div = document.getElementById("player2-team");
-const logDiv = document.getElementById("battle-log");
-const actionDiv = document.getElementById("action-buttons");
-const currentTurnDiv = document.getElementById("current-turn");
+  const p1Input = document.getElementById("p1-name");
+  const p2Input = document.getElementById("p2-name");
+  const firstTurnSelect = document.getElementById("first-turn");
+  const startBtn = document.getElementById("start-btn");
+  const restartBtn = document.getElementById("restart-btn");
+  const historyBtn = document.getElementById("history-btn");
+  const historyModal = document.getElementById("battle-history-modal");
+  const historyLog = document.getElementById("battle-history-log");
+  const closeHistoryBtn = document.getElementById("close-history-btn");
 
-// ---------- Battle History popup ----------
-const historyPopup = document.createElement("div");
-historyPopup.id = "history-popup";
-historyPopup.classList.add("hidden");
-const historyContent = document.createElement("div");
-historyContent.id = "history-content";
-historyContent.innerHTML = `
-  <h2>Battle History</h2>
-  <div id="history-log"></div>
-  <button id="close-history-btn">Close</button>
-`;
-historyPopup.appendChild(historyContent);
-document.body.appendChild(historyPopup);
+  const p1Div = document.getElementById("player1-team");
+  const p2Div = document.getElementById("player2-team");
+  const logDiv = document.getElementById("battle-log");
+  const actionDiv = document.getElementById("action-buttons");
+  const currentTurnDiv = document.getElementById("current-turn");
 
-const historyLogDiv = document.getElementById("history-log");
-const closeHistoryBtn = document.getElementById("close-history-btn");
-closeHistoryBtn.onclick = () => historyPopup.classList.add("hidden");
+  let player1Team = [];
+  let player2Team = [];
+  let currentPlayer = "";
 
-// Hide battle buttons initially
-historyBtn.style.display = "none";
-restartBtn.style.display = "none";
-
-let player1Team = [];
-let player2Team = [];
-let currentPlayer = "";
-
-// ---------- Functions ----------
-function updateFirstTurnOptions() {
-  const p1Name = p1Input.value || "Player 1";
-  const p2Name = p2Input.value || "Player 2";
-
-  firstTurnSelect.innerHTML = `
-    <option value="random">Random</option>
-    <option value="player1">${p1Name}</option>
-    <option value="player2">${p2Name}</option>
-  `;
-}
-p1Input.addEventListener("input", updateFirstTurnOptions);
-p2Input.addEventListener("input", updateFirstTurnOptions);
-updateFirstTurnOptions();
-
-function getRandomCharacters(count) {
-  const team = [];
-  for (let i = 0; i < count; i++) {
-    const charData = allCharacters[Math.floor(Math.random() * allCharacters.length)];
-    const char = JSON.parse(JSON.stringify(charData.info));
-    char.attacks = charData.attacks;
-    char.id = `${char.name}-${Date.now()}-${i}`;
-    team.push(char);
-  }
-  return team;
-}
-
-function renderTeams() {
-  p1Div.innerHTML = `<h3>${p1Input.value || "Player 1"}</h3>` + player1Team.map(c => `
-    <div class="character-card" id="${c.id}">
-      <strong>${c.name}</strong><br>
-      HP: <span class="hp">${c.currentHP}</span>
-    </div>`).join('');
-
-  p2Div.innerHTML = `<h3>${p2Input.value || "Player 2"}</h3>` + player2Team.map(c => `
-    <div class="character-card" id="${c.id}">
-      <strong>${c.name}</strong><br>
-      HP: <span class="hp">${c.currentHP}</span>
-    </div>`).join('');
-}
-
-function addToLog(msg) {
-  const p = document.createElement("p");
-  p.innerHTML = msg;
-  logDiv.appendChild(p);
-  logDiv.scrollTop = logDiv.scrollHeight;
-
-  const hp = document.createElement("p");
-  hp.innerHTML = msg;
-  historyLogDiv.appendChild(hp);
-  historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
-}
-
-function updateCurrentTurnDisplay() {
-  currentTurnDiv.innerHTML = `<strong>${currentPlayer}'s turn!</strong>`;
-}
-
-function getTeam(player) {
-  return player === (p1Input.value || "Player 1") ? player1Team : player2Team;
-}
-function getOpponentTeam(player) {
-  return player === (p1Input.value || "Player 1") ? player2Team : player1Team;
-}
-
-// ---------- Battle Flow ----------
-startBtn.addEventListener("click", () => {
-  const teamSize = parseInt(document.getElementById("team-size").value);
-  const turnChoice = firstTurnSelect.value;
-
-  player1Team = getRandomCharacters(teamSize);
-  player2Team = getRandomCharacters(teamSize);
-
-  if (turnChoice === "random") currentPlayer = Math.random() < 0.5 ? (p1Input.value || "Player 1") : (p2Input.value || "Player 2");
-  else if (turnChoice === "player1") currentPlayer = p1Input.value || "Player 1";
-  else currentPlayer = p2Input.value || "Player 2";
-
-  document.getElementById("main-menu").classList.add("hidden");
-  document.getElementById("battle-screen").classList.remove("hidden");
-
-  historyBtn.style.display = "inline-block";
-  restartBtn.style.display = "inline-block";
-
-  renderTeams();
-  addToLog(`<strong>${currentPlayer}</strong> goes first!`);
-  updateCurrentTurnDisplay();
-  nextTurn();
-});
-
-historyBtn.addEventListener("click", () => {
-  historyPopup.classList.remove("hidden");
-});
-
-// ---------- Remaining Battle Functions ----------
-function checkGameOver() {
-  const p1Alive = player1Team.some(c => c.currentHP > 0);
-  const p2Alive = player2Team.some(c => c.currentHP > 0);
-  if (!p1Alive || !p2Alive) {
-    addToLog(`<strong>Game Over!</strong> ${p1Alive ? p1Input.value || "Player 1" : p2Input.value || "Player 2"} wins!`);
-    actionDiv.innerHTML = "";
-    return true;
-  }
-  return false;
-}
-
-function switchTurn() {
-  const p1Name = p1Input.value || "Player 1";
-  const p2Name = p2Input.value || "Player 2";
-  currentPlayer = currentPlayer === p1Name ? p2Name : p1Name;
-  addToLog(`It's now <strong>${currentPlayer}'s</strong> turn!`);
-  updateCurrentTurnDisplay();
-  nextTurn();
-}
-
-function nextTurn() {
-  if (checkGameOver()) return;
-
-  const team = getTeam(currentPlayer);
-  const aliveCharacters = team.filter(c => c.currentHP > 0);
-
-  if (aliveCharacters.length === 0) {
-    switchTurn();
-    return;
-  }
-
-  showCharacterSelection(aliveCharacters);
-}
-
-function showCharacterSelection(aliveCharacters) {
-  actionDiv.innerHTML = "";
-  const title = document.createElement("p");
-  title.textContent = `${currentPlayer}, choose a character to attack with:`;
-  actionDiv.appendChild(title);
-
-  aliveCharacters.forEach(c => {
-    const btn = document.createElement("button");
-    btn.textContent = c.name;
-    btn.onclick = () => showAttackButtons(c);
-    actionDiv.appendChild(btn);
-  });
-}
-
-function showAttackButtons(attacker) {
-  actionDiv.innerHTML = "";
-  const title = document.createElement("p");
-  title.textContent = `${currentPlayer}, choose an attack for ${attacker.name}:`;
-  actionDiv.appendChild(title);
-
-  attacker.attacks.forEach(a => {
-    const btn = document.createElement("button");
-    btn.textContent = a.name;
-    btn.onclick = () => showTargetButtons(attacker, a);
-    actionDiv.appendChild(btn);
-  });
-
-  const cancelBtn = document.createElement("button");
-  cancelBtn.textContent = "Cancel";
-  cancelBtn.onclick = () => showCharacterSelection(getTeam(currentPlayer).filter(c => c.currentHP > 0));
-  actionDiv.appendChild(cancelBtn);
-}
-
-function showTargetButtons(attacker, attack) {
-  actionDiv.innerHTML = "";
-  const opponentTeam = getOpponentTeam(currentPlayer).filter(c => c.currentHP > 0);
-
-  const title = document.createElement("p");
-  title.textContent = `Choose a target for ${attack.name}:`;
-  actionDiv.appendChild(title);
-
-  opponentTeam.forEach(t => {
-    const btn = document.createElement("button");
-    btn.textContent = t.name;
-    btn.onclick = () => resolveAttack(attacker, t, attack);
-    actionDiv.appendChild(btn);
-  });
-
-  const cancelBtn = document.createElement("button");
-  cancelBtn.textContent = "Cancel";
-  cancelBtn.onclick = () => showAttackButtons(attacker);
-  actionDiv.appendChild(cancelBtn);
-}
-
-function resolveAttack(attacker, target, attack) {
-  const dmg = Math.floor(Math.random() * 20) + 5;
-  target.currentHP -= dmg;
-  if (target.currentHP < 0) target.currentHP = 0;
-
-  addToLog(`${attacker.name} used <strong>${attack.name}</strong> on ${target.name} for ${dmg} damage!`);
-
-  renderTeams();
-  switchTurn();
-}
-
-// Restart
-restartBtn.addEventListener("click", () => {
-  const confirmRestart = confirm("Are you sure you want to restart? This will return you to the main menu.");
-  if (!confirmRestart) return;
-
-  document.getElementById("battle-screen").classList.add("hidden");
-  document.getElementById("main-menu").classList.remove("hidden");
-
-  logDiv.innerHTML = "";
-  p1Div.innerHTML = "";
-  p2Div.innerHTML = "";
-  actionDiv.innerHTML = "";
-  historyLogDiv.innerHTML = "";
-
+  // Hide battle buttons initially
   historyBtn.style.display = "none";
   restartBtn.style.display = "none";
+
+  // Update Who Goes First dropdown dynamically
+  function updateFirstTurnOptions() {
+    const p1Name = p1Input.value || "Player 1";
+    const p2Name = p2Input.value || "Player 2";
+    firstTurnSelect.innerHTML = `
+      <option value="random">Random</option>
+      <option value="player1">${p1Name}</option>
+      <option value="player2">${p2Name}</option>
+    `;
+  }
+  p1Input.addEventListener("input", updateFirstTurnOptions);
+  p2Input.addEventListener("input", updateFirstTurnOptions);
+  updateFirstTurnOptions();
+
+  // Random character team generator
+  function getRandomCharacters(count) {
+    const team = [];
+    for (let i = 0; i < count; i++) {
+      const charData = allCharacters[Math.floor(Math.random() * allCharacters.length)];
+      const char = JSON.parse(JSON.stringify(charData.info));
+      char.attacks = charData.attacks;
+      char.id = `${char.name}-${Date.now()}-${i}`;
+      team.push(char);
+    }
+    return team;
+  }
+
+  // Render teams
+  function renderTeams() {
+    p1Div.innerHTML = `<h3>${p1Input.value || "Player 1"}</h3>` + player1Team.map(c => `
+      <div class="character-card" id="${c.id}">
+        <strong>${c.name}</strong><br>
+        HP: <span class="hp">${c.currentHP}</span>
+      </div>`).join('');
+    p2Div.innerHTML = `<h3>${p2Input.value || "Player 2"}</h3>` + player2Team.map(c => `
+      <div class="character-card" id="${c.id}">
+        <strong>${c.name}</strong><br>
+        HP: <span class="hp">${c.currentHP}</span>
+      </div>`).join('');
+  }
+
+  // Add to battle log & history
+  function addToLog(msg) {
+    const p = document.createElement("p");
+    p.innerHTML = msg;
+    logDiv.appendChild(p);
+    logDiv.scrollTop = logDiv.scrollHeight;
+
+    const historyEntry = document.createElement("p");
+    historyEntry.innerHTML = msg;
+    historyLog.appendChild(historyEntry);
+  }
+
+  function updateCurrentTurnDisplay() {
+    currentTurnDiv.innerHTML = `<strong>${currentPlayer}'s turn!</strong>`;
+  }
+
+  function getTeam(player) {
+    return player === (p1Input.value || "Player 1") ? player1Team : player2Team;
+  }
+  function getOpponentTeam(player) {
+    return player === (p1Input.value || "Player 1") ? player2Team : player1Team;
+  }
+
+  // Start battle
+  startBtn.addEventListener("click", () => {
+    const teamSize = parseInt(document.getElementById("team-size").value);
+    const turnChoice = firstTurnSelect.value;
+
+    player1Team = getRandomCharacters(teamSize);
+    player2Team = getRandomCharacters(teamSize);
+
+    if (turnChoice === "random") currentPlayer = Math.random() < 0.5 ? (p1Input.value || "Player 1") : (p2Input.value || "Player 2");
+    else if (turnChoice === "player1") currentPlayer = p1Input.value || "Player 1";
+    else currentPlayer = p2Input.value || "Player 2";
+
+    document.getElementById("main-menu").classList.add("hidden");
+    document.getElementById("battle-screen").classList.remove("hidden");
+
+    historyBtn.style.display = "inline-block";
+    restartBtn.style.display = "inline-block";
+
+    historyLog.innerHTML = ""; // clear history for new battle
+    renderTeams();
+    addToLog(`<strong>${currentPlayer}</strong> goes first!`);
+    updateCurrentTurnDisplay();
+    nextTurn();
+  });
+
+  // Check game over
+  function checkGameOver() {
+    const p1Alive = player1Team.some(c => c.currentHP > 0);
+    const p2Alive = player2Team.some(c => c.currentHP > 0);
+    if (!p1Alive || !p2Alive) {
+      addToLog(`<strong>Game Over!</strong> ${p1Alive ? p1Input.value || "Player 1" : p2Input.value || "Player 2"} wins!`);
+      actionDiv.innerHTML = "";
+      return true;
+    }
+    return false;
+  }
+
+  // Switch turn
+  function switchTurn() {
+    const p1Name = p1Input.value || "Player 1";
+    const p2Name = p2Input.value || "Player 2";
+    currentPlayer = currentPlayer === p1Name ? p2Name : p1Name;
+    addToLog(`It's now <strong>${currentPlayer}'s</strong> turn!`);
+    updateCurrentTurnDisplay();
+    nextTurn();
+  }
+
+  function nextTurn() {
+    if (checkGameOver()) return;
+
+    const team = getTeam(currentPlayer);
+    const aliveCharacters = team.filter(c => c.currentHP > 0);
+
+    if (aliveCharacters.length === 0) {
+      switchTurn();
+      return;
+    }
+
+    showCharacterSelection(aliveCharacters);
+  }
+
+  function showCharacterSelection(aliveCharacters) {
+    actionDiv.innerHTML = "";
+    const title = document.createElement("p");
+    title.textContent = `${currentPlayer}, choose a character to attack with:`;
+    actionDiv.appendChild(title);
+
+    aliveCharacters.forEach(c => {
+      const btn = document.createElement("button");
+      btn.textContent = c.name;
+      btn.onclick = () => showAttackButtons(c);
+      actionDiv.appendChild(btn);
+    });
+  }
+
+  function showAttackButtons(attacker) {
+    actionDiv.innerHTML = "";
+    const title = document.createElement("p");
+    title.textContent = `${currentPlayer}, choose an attack for ${attacker.name}:`;
+    actionDiv.appendChild(title);
+
+    attacker.attacks.forEach(a => {
+      const btn = document.createElement("button");
+      btn.textContent = a.name;
+      btn.onclick = () => showTargetButtons(attacker, a);
+      actionDiv.appendChild(btn);
+    });
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.onclick = () => showCharacterSelection(getTeam(currentPlayer).filter(c => c.currentHP > 0));
+    actionDiv.appendChild(cancelBtn);
+  }
+
+  function showTargetButtons(attacker, attack) {
+    actionDiv.innerHTML = "";
+    const opponentTeam = getOpponentTeam(currentPlayer).filter(c => c.currentHP > 0);
+
+    const title = document.createElement("p");
+    title.textContent = `Choose a target for ${attack.name}:`;
+    actionDiv.appendChild(title);
+
+    opponentTeam.forEach(t => {
+      const btn = document.createElement("button");
+      btn.textContent = t.name;
+      btn.onclick = () => resolveAttack(attacker, t, attack);
+      actionDiv.appendChild(btn);
+    });
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.onclick = () => showAttackButtons(attacker);
+    actionDiv.appendChild(cancelBtn);
+  }
+
+  function resolveAttack(attacker, target, attack) {
+    const dmg = Math.floor(Math.random() * 20) + 5;
+    target.currentHP -= dmg;
+    if (target.currentHP < 0) target.currentHP = 0;
+
+    addToLog(`${attacker.name} used <strong>${attack.name}</strong> on ${target.name} for ${dmg} damage!`);
+
+    renderTeams();
+    switchTurn();
+  }
+
+  // Restart battle
+  restartBtn.addEventListener("click", () => {
+    if (!confirm("Are you sure you want to restart? This will return you to the main menu.")) return;
+    document.getElementById("battle-screen").classList.add("hidden");
+    document.getElementById("main-menu").classList.remove("hidden");
+    logDiv.innerHTML = "";
+    p1Div.innerHTML = "";
+    p2Div.innerHTML = "";
+    actionDiv.innerHTML = "";
+    historyBtn.style.display = "none";
+    restartBtn.style.display = "none";
+  });
+
+  // Battle History modal
+  historyBtn.addEventListener("click", () => {
+    historyModal.classList.remove("hidden");
+  });
+  closeHistoryBtn.addEventListener("click", () => {
+    historyModal.classList.add("hidden");
+  });
+
 });
