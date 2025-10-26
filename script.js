@@ -30,9 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const p1Div = document.getElementById("player1-team");
   const p2Div = document.getElementById("player2-team");
-  const logDiv = document.createElement("div");
-  logDiv.id = "battle-log";
-  document.getElementById("battle-screen").insertBefore(logDiv, document.getElementById("action-buttons"));
   const actionDiv = document.getElementById("action-buttons");
   const currentTurnDiv = document.getElementById("current-turn");
 
