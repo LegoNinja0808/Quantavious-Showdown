@@ -31,9 +31,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const p1Div = document.getElementById("player1-team");
   const p2Div = document.getElementById("player2-team");
   const logDiv = document.getElementById("battle-log");
-
   const actionDiv = document.getElementById("action-buttons");
   const currentTurnDiv = document.getElementById("current-turn");
+
+  // Battle History popup
+  const historyPopup = document.createElement("div");
+  historyPopup.id = "history-popup";
+  historyPopup.classList.add("hidden");
+  const historyContent = document.createElement("div");
+  historyContent.id = "history-content";
+  historyContent.innerHTML = `
+    <h2>Battle History</h2>
+    <div id="history-log"></div>
+    <button id="close-history-btn">Close</button>
+  `;
+  historyPopup.appendChild(historyContent);
+  document.body.appendChild(historyPopup);
+
+  const historyLogDiv = document.getElementById("history-log");
+  const closeHistoryBtn = document.getElementById("close-history-btn");
+  closeHistoryBtn.onclick = () => historyPopup.classList.add("hidden");
 
   // Hide battle buttons initially
   historyBtn.style.display = "none";
@@ -92,6 +109,12 @@ document.addEventListener("DOMContentLoaded", () => {
     p.innerHTML = msg;
     logDiv.appendChild(p);
     logDiv.scrollTop = logDiv.scrollHeight;
+
+    // Also append to history log
+    const hp = document.createElement("p");
+    hp.innerHTML = msg;
+    historyLogDiv.appendChild(hp);
+    historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
   }
 
   // Update current turn display
@@ -244,16 +267,4 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmRestart = confirm("Are you sure you want to restart? This will return you to the main menu.");
     if (!confirmRestart) return;
 
-    document.getElementById("battle-screen").classList.add("hidden");
-    document.getElementById("main-menu").classList.remove("hidden");
-
-    logDiv.innerHTML = "";
-    p1Div.innerHTML = "";
-    p2Div.innerHTML = "";
-    actionDiv.innerHTML = "";
-
-    historyBtn.style.display = "none";
-    restartBtn.style.display = "none";
-  });
-
-});
+    document.getElementById("battle-screen").class
