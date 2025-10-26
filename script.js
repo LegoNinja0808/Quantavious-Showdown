@@ -100,12 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>`).join('');
   }
 
-  // Add to log (screen + history)
-  function addToLog(msg) {
-    const p = document.createElement("p");
-    p.innerHTML = msg;
-    logDiv.appendChild(p);
-    logDiv.scrollTop = logDiv.scrollHeight;
+  // Add to log (only popup history, not on battle screen)
+function addToLog(msg) {
+  const historyP = document.createElement("p");
+  historyP.innerHTML = msg;
+  historyLogDiv.appendChild(historyP);
+  historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
+}
 
     const historyP = document.createElement("p");
     historyP.innerHTML = msg;
