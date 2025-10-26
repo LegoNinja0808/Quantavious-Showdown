@@ -1,5 +1,6 @@
 .hidden {
   display: none !important;
+  pointer-events: none;
 }
 
 body {
@@ -25,53 +26,58 @@ h1 {
   margin: 15px 0;
 }
 
-/* General input/button style */
+/* Input & button style */
 input, select, button {
   background-color: transparent;
   border: 2px solid white;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-radius: 8px;
   font-size: 1rem;
   color: white;
 }
 
-/* Dropdown options visibility */
 select option {
   color: black;
   background-color: white;
 }
 
-/* Hover effect for all buttons */
 button:hover {
   background-color: white;
   color: black;
   cursor: pointer;
 }
 
-/* ---- Battle Screen Layout ---- */
+/* Battle Screen */
 #battle-screen {
   position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  padding-bottom: 120px; /* enough space for bottom buttons */
+  padding-bottom: 100px; /* space for bottom buttons */
+  z-index: 10;
 }
 
-/* Battle log styling */
-#battle-log {
+#current-turn {
   margin-top: 20px;
-  max-width: 600px;
-  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
 }
 
-/* ---- Action Buttons Container ---- */
+#battle-log {
+  margin-top: 10px;
+  text-align: center;
+  max-width: 600px;
+}
+
+/* Action Buttons */
 #action-buttons {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-  width: 90%;
+  width: 100%;
   max-width: 300px;
 }
 
@@ -80,7 +86,7 @@ button:hover {
   width: 100%;
   padding: 12px 15px;
   margin: 6px 0;
-  font-size: 18px; /* slightly bigger than bottom buttons */
+  font-size: 16px;
   border-radius: 8px;
   border: 2px solid white;
   background-color: black;
@@ -94,7 +100,7 @@ button:hover {
   color: black;
 }
 
-/* ---- Fixed Bottom Buttons ---- */
+/* Fixed Bottom Buttons */
 #bottom-buttons {
   position: fixed;
   bottom: 20px;
@@ -103,11 +109,10 @@ button:hover {
   justify-content: space-between;
   padding: 0 20px;
   box-sizing: border-box;
-  z-index: 1000; /* ensure visible above other elements */
 }
 
 #bottom-buttons button {
-  padding: 12px 22px;
+  padding: 10px 20px;
   font-size: 16px;
   border-radius: 8px;
   border: 2px solid white;
@@ -120,11 +125,4 @@ button:hover {
 #bottom-buttons button:hover {
   background-color: white;
   color: black;
-}
-
-/* ---- Current Turn Display ---- */
-#current-turn {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  font-weight: bold;
 }
