@@ -25,23 +25,23 @@ h1 {
   margin: 15px 0;
 }
 
-/* Old card/button style */
+/* General input/button style */
 input, select, button {
   background-color: transparent;
   border: 2px solid white;
-  padding: 8px 12px;
+  padding: 10px 16px;
   border-radius: 8px;
   font-size: 1rem;
-  color: white; /* Selected value appears white */
+  color: white;
 }
 
-/* Fix dropdown options visibility */
+/* Dropdown options visibility */
 select option {
   color: black;
   background-color: white;
 }
 
-/* Button hover style */
+/* Hover effect for all buttons */
 button:hover {
   background-color: white;
   color: black;
@@ -54,14 +54,14 @@ button:hover {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
-  padding-bottom: 100px; /* space for bottom buttons */
+  padding-bottom: 120px; /* enough space for bottom buttons */
 }
 
-/* Battle text area */
+/* Battle log styling */
 #battle-log {
   margin-top: 20px;
+  max-width: 600px;
   text-align: center;
 }
 
@@ -71,8 +71,8 @@ button:hover {
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-  width: 100%;
-  max-width: 300px; /* limit width */
+  width: 90%;
+  max-width: 300px;
 }
 
 #action-buttons button {
@@ -80,7 +80,7 @@ button:hover {
   width: 100%;
   padding: 12px 15px;
   margin: 6px 0;
-  font-size: 16px;
+  font-size: 18px; /* slightly bigger than bottom buttons */
   border-radius: 8px;
   border: 2px solid white;
   background-color: black;
@@ -103,10 +103,11 @@ button:hover {
   justify-content: space-between;
   padding: 0 20px;
   box-sizing: border-box;
+  z-index: 1000; /* ensure visible above other elements */
 }
 
 #bottom-buttons button {
-  padding: 10px 20px;
+  padding: 12px 22px;
   font-size: 16px;
   border-radius: 8px;
   border: 2px solid white;
@@ -119,4 +120,11 @@ button:hover {
 #bottom-buttons button:hover {
   background-color: white;
   color: black;
+}
+
+/* ---- Current Turn Display ---- */
+#current-turn {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
