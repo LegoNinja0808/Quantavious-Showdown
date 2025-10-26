@@ -261,7 +261,6 @@ function addToLog(msg) {
     document.getElementById("battle-screen").classList.add("hidden");
     document.getElementById("main-menu").classList.remove("hidden");
 
-    logDiv.innerHTML = "";
     historyLogDiv.innerHTML = "";
     p1Div.innerHTML = "";
     p2Div.innerHTML = "";
