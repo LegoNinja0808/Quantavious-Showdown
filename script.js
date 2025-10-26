@@ -11,6 +11,7 @@ import brodyAttacks from './characters/brody/commonattacks.js';
 import jonathanAttacks from './characters/jonathan/commonattacks.js';
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const allCharacters = [
     { info: Johan, attacks: johanAttacks },
     { info: Micah, attacks: micahAttacks },
@@ -29,11 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const p1Div = document.getElementById("player1-team");
   const p2Div = document.getElementById("player2-team");
-  const logDiv = document.getElementById("battle-log");
+  const logDiv = document.createElement("div");
+  logDiv.id = "battle-log";
+  document.getElementById("battle-screen").insertBefore(logDiv, document.getElementById("action-buttons"));
   const actionDiv = document.getElementById("action-buttons");
   const currentTurnDiv = document.getElementById("current-turn");
 
-  // Battle History Popup
+  // Battle History Modal
   const historyPopup = document.getElementById("history-modal");
   const historyLogDiv = document.getElementById("history-log");
   const closeHistoryBtn = document.getElementById("close-history");
@@ -64,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <option value="player2">${p2Name}</option>
     `;
   }
+
   p1Input.addEventListener("input", updateFirstTurnOptions);
   p2Input.addEventListener("input", updateFirstTurnOptions);
   updateFirstTurnOptions();
@@ -96,16 +100,16 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>`).join('');
   }
 
-  // Add message to both battle log and history
+  // Add to log (screen + history)
   function addToLog(msg) {
-    const p1 = document.createElement("p");
-    p1.innerHTML = msg;
-    logDiv.appendChild(p1);
+    const p = document.createElement("p");
+    p.innerHTML = msg;
+    logDiv.appendChild(p);
     logDiv.scrollTop = logDiv.scrollHeight;
 
-    const p2 = document.createElement("p");
-    p2.innerHTML = msg;
-    historyLogDiv.appendChild(p2);
+    const historyP = document.createElement("p");
+    historyP.innerHTML = msg;
+    historyLogDiv.appendChild(historyP);
     historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
   }
 
@@ -114,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
     currentTurnDiv.innerHTML = `<strong>${currentPlayer}'s turn!</strong>`;
   }
 
-  // Get teams
   function getTeam(player) {
     return player === (p1Input.value || "Player 1") ? player1Team : player2Team;
   }
@@ -168,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function switchTurn() {
     const p1Name = p1Input.value || "Player 1";
     const p2Name = p2Input.value || "Player 2";
+
     currentPlayer = currentPlayer === p1Name ? p2Name : p1Name;
     addToLog(`It's now <strong>${currentPlayer}'s</strong> turn!`);
     updateCurrentTurnDisplay();
@@ -177,12 +181,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // Next turn
   function nextTurn() {
     if (checkGameOver()) return;
-    const team = getTeam(currentPlayer).filter(c => c.currentHP > 0);
-    if (team.length === 0) {
+
+    const team = getTeam(currentPlayer);
+    const aliveCharacters = team.filter(c => c.currentHP > 0);
+
+    if (aliveCharacters.length === 0) {
       switchTurn();
       return;
     }
-    showCharacterSelection(team);
+
+    showCharacterSelection(aliveCharacters);
   }
 
   // Show character selection
@@ -255,7 +263,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Restart
   restartBtn.addEventListener("click", () => {
-    if (!confirm("Are you sure you want to restart? This will return you to the main menu.")) return;
+    const confirmRestart = confirm("Are you sure you want to restart? This will return you to the main menu.");
+    if (!confirmRestart) return;
 
     document.getElementById("battle-screen").classList.add("hidden");
     document.getElementById("main-menu").classList.remove("hidden");
@@ -269,4 +278,5 @@ document.addEventListener("DOMContentLoaded", () => {
     historyBtn.style.display = "none";
     restartBtn.style.display = "none";
   });
+
 });
