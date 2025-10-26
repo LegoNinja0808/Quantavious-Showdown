@@ -47,3 +47,44 @@ button:hover {
 .hidden {
   display: none;
 }
+
+#battle-screen {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-bottom: 60px; /* space for buttons */
+}
+
+#battle-log {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#battle-screen button {
+  position: fixed;
+  bottom: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: 2px solid white;
+  background: black;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#history-btn {
+  left: 20px;
+}
+
+#restart-btn {
+  right: 20px;
+}
+
+#battle-screen button:hover {
+  background: white;
+  color: black;
+}
