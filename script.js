@@ -105,12 +105,6 @@ function addToLog(msg) {
   historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
 }
 
-    const historyP = document.createElement("p");
-    historyP.innerHTML = msg;
-    historyLogDiv.appendChild(historyP);
-    historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
-  }
-
   // Update current turn display
   function updateCurrentTurnDisplay() {
     currentTurnDiv.innerHTML = `<strong>${currentPlayer}'s turn!</strong>`;
