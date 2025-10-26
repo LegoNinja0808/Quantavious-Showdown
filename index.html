@@ -30,11 +30,11 @@
     </div>
 
     <div class="input-group">
-  <label>Who Goes First:</label>
-  <select id="first-turn">
-    <option value="random">Random</option>
-  </select>
-</div>
+      <label>Who Goes First:</label>
+      <select id="first-turn">
+        <option value="random">Random</option>
+      </select>
+    </div>
 
     <button id="start-btn">Start Battle</button>
   </div>
@@ -43,8 +43,10 @@
     <div id="battle-log"></div>
     <div id="player1-team"></div>
     <div id="player2-team"></div>
-    <button id="history-btn">Battle History</button>
-    <button id="restart-btn">Restart</button>
+
+    <!-- 👇 Start hidden so they only appear during battle -->
+    <button id="history-btn" class="hidden">Battle History</button>
+    <button id="restart-btn" class="hidden">Restart</button>
   </div>
 
   <script type="module" src="script.js"></script>
