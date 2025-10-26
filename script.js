@@ -1,3 +1,11 @@
+import Johan from './characters/johan/johan.js';
+import Micah from './characters/micah/micah.js';
+import Arman from './characters/arman/arman.js';
+import Brody from './characters/brody/brody.js';
+import Jonathan from './characters/jonathan/jonathan.js';
+
+const allCharacters = [Johan, Micah, Arman, Brody, Jonathan];
+
 const p1Input = document.getElementById("p1-name");
 const p2Input = document.getElementById("p2-name");
 const firstTurnSelect = document.getElementById("first-turn");
