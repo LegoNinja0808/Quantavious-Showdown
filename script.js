@@ -1,4 +1,4 @@
-  import Johan from './characters/johan/johan.js';
+import Johan from './characters/johan/johan.js';
 import Micah from './characters/micah/micah.js';
 import Arman from './characters/arman/arman.js';
 import Brody from './characters/brody/brody.js';
@@ -18,21 +18,7 @@ const allCharacters = [
   { info: Jonathan, attacks: jonathanAttacks }
 ];
 
-// Helper: create player teams
-function getRandomCharacters(count) {
-  const team = [];
-  for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * allCharacters.length);
-    const charData = allCharacters[randomIndex];
-    const char = JSON.parse(JSON.stringify(charData.info));
-    char.attacks = charData.attacks; // attach battle-ready attacks
-    char.id = `${char.name}-${Date.now()}-${i}`;
-    team.push(char);
-  }
-  return team;
-}
-
-// UI Elements
+// Input elements
 const p1Input = document.getElementById("p1-name");
 const p2Input = document.getElementById("p2-name");
 const firstTurnSelect = document.getElementById("first-turn");
@@ -43,6 +29,10 @@ const historyBtn = document.getElementById("history-btn");
 const p1Div = document.getElementById("player1-team");
 const p2Div = document.getElementById("player2-team");
 const logDiv = document.getElementById("battle-log");
+
+const actionDiv = document.createElement("div"); // For attack/target buttons
+actionDiv.id = "action-buttons";
+document.getElementById("battle-screen").appendChild(actionDiv);
 
 // Update dropdown dynamically
 function updateFirstTurnOptions() {
@@ -67,34 +57,22 @@ restartBtn.style.display = "none";
 let player1Team = [];
 let player2Team = [];
 let currentPlayer = "";
-let turnCounter = 0;
 
-// Start battle
-startBtn.addEventListener("click", () => {
-  const p1Name = p1Input.value || "Player 1";
-  const p2Name = p2Input.value || "Player 2";
-  const teamSize = parseInt(document.getElementById("team-size").value);
-  const turnChoice = firstTurnSelect.value;
+// Helper: create player teams
+function getRandomCharacters(count) {
+  const team = [];
+  for (let i = 0; i < count; i++) {
+    const randomIndex = Math.floor(Math.random() * allCharacters.length);
+    const charData = allCharacters[randomIndex];
+    const char = JSON.parse(JSON.stringify(charData.info));
+    char.attacks = charData.attacks; // attach battle-ready attacks
+    char.id = `${char.name}-${Date.now()}-${i}`;
+    team.push(char);
+  }
+  return team;
+}
 
-  player1Team = getRandomCharacters(teamSize);
-  player2Team = getRandomCharacters(teamSize);
-
-  if (turnChoice === "random") currentPlayer = Math.random() < 0.5 ? p1Name : p2Name;
-  else if (turnChoice === "player1") currentPlayer = p1Name;
-  else currentPlayer = p2Name;
-
-  document.getElementById("main-menu").classList.add("hidden");
-  document.getElementById("battle-screen").classList.remove("hidden");
-
-  historyBtn.style.display = "inline-block";
-  restartBtn.style.display = "inline-block";
-
-  renderTeams();
-  addToLog(`<strong>${currentPlayer}</strong> goes first!`);
-  nextTurn();
-});
-
-// Render player teams
+// Render teams
 function renderTeams() {
   p1Div.innerHTML = `<h3>${p1Input.value || "Player 1"}</h3>` + player1Team.map(c => `
     <div class="character-card" id="${c.id}">
@@ -109,7 +87,7 @@ function renderTeams() {
     </div>`).join('');
 }
 
-// Add to battle log
+// Add to log
 function addToLog(msg) {
   const p = document.createElement("p");
   p.innerHTML = msg;
@@ -117,9 +95,47 @@ function addToLog(msg) {
   logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-// Get team by player
+// Get current and opposing teams
 function getTeam(player) {
   return player === (p1Input.value || "Player 1") ? player1Team : player2Team;
+}
+function getOpponentTeam(player) {
+  return player === (p1Input.value || "Player 1") ? player2Team : player1Team;
+}
+
+// Start battle
+startBtn.addEventListener("click", () => {
+  const teamSize = parseInt(document.getElementById("team-size").value);
+  const turnChoice = firstTurnSelect.value;
+
+  player1Team = getRandomCharacters(teamSize);
+  player2Team = getRandomCharacters(teamSize);
+
+  if (turnChoice === "random") currentPlayer = Math.random() < 0.5 ? (p1Input.value || "Player 1") : (p2Input.value || "Player 2");
+  else if (turnChoice === "player1") currentPlayer = p1Input.value || "Player 1";
+  else currentPlayer = p2Input.value || "Player 2";
+
+  document.getElementById("main-menu").classList.add("hidden");
+  document.getElementById("battle-screen").classList.remove("hidden");
+
+  historyBtn.style.display = "inline-block";
+  restartBtn.style.display = "inline-block";
+
+  renderTeams();
+  addToLog(`<strong>${currentPlayer}</strong> goes first!`);
+  nextTurn();
+});
+
+// Check if game over
+function checkGameOver() {
+  const p1Alive = player1Team.some(c => c.currentHP > 0);
+  const p2Alive = player2Team.some(c => c.currentHP > 0);
+  if (!p1Alive || !p2Alive) {
+    addToLog(`<strong>Game Over!</strong> ${p1Alive ? p1Input.value || "Player 1" : p2Input.value || "Player 2"} wins!`);
+    actionDiv.innerHTML = "";
+    return true;
+  }
+  return false;
 }
 
 // Switch turns
@@ -131,78 +147,71 @@ function switchTurn() {
   nextTurn();
 }
 
-// Check if game over
-function checkGameOver() {
-  const p1Alive = player1Team.some(c => c.currentHP > 0);
-  const p2Alive = player2Team.some(c => c.currentHP > 0);
-  if (!p1Alive || !p2Alive) {
-    addToLog(`<strong>Game Over!</strong> ${p1Alive ? p1Input.value || "Player 1" : p2Input.value || "Player 2"} wins!`);
-    return true;
-  }
-  return false;
-}
-
 // Next turn
 function nextTurn() {
   if (checkGameOver()) return;
 
-  const attackingTeam = getTeam(currentPlayer);
-  const defendingTeam = currentPlayer === (p1Input.value || "Player 1") ? player2Team : player1Team;
+  const team = getTeam(currentPlayer);
+  const aliveCharacters = team.filter(c => c.currentHP > 0);
 
-  const aliveAttackers = attackingTeam.filter(c => c.currentHP > 0);
-  if (aliveAttackers.length === 0) {
+  if (aliveCharacters.length === 0) {
     switchTurn();
     return;
   }
 
-  // Ask player to pick a character to attack with
-  const attacker = aliveAttackers[0]; // simple: first alive character for now
-  promptAttack(attacker, defendingTeam);
+  const attacker = aliveCharacters[0]; // For now: first alive character
+  showAttackButtons(attacker);
 }
 
-// Prompt for attack
-function promptAttack(attacker, defendingTeam) {
-  const attackNames = attacker.attacks.map(a => a.name).join(", ");
-  const attackChoice = prompt(`${currentPlayer}, choose an attack for ${attacker.name}:\n${attackNames}\nType 'cancel' to cancel.`);
-  if (!attackChoice || attackChoice.toLowerCase() === "cancel") {
-    addToLog(`${currentPlayer} canceled choosing an attack.`);
-    nextTurn();
-    return;
-  }
+// Show attack buttons
+function showAttackButtons(attacker) {
+  actionDiv.innerHTML = "";
+  const attackTitle = document.createElement("p");
+  attackTitle.textContent = `${currentPlayer}, choose an attack for ${attacker.name}:`;
+  actionDiv.appendChild(attackTitle);
 
-  const chosenAttack = attacker.attacks.find(a => a.name.toLowerCase() === attackChoice.toLowerCase());
-  if (!chosenAttack) {
-    alert("Invalid attack name, try again.");
-    promptAttack(attacker, defendingTeam);
-    return;
-  }
+  attacker.attacks.forEach(a => {
+    const btn = document.createElement("button");
+    btn.textContent = a.name;
+    btn.onclick = () => showTargetButtons(attacker, a);
+    actionDiv.appendChild(btn);
+  });
+}
 
-  // Choose target
-  if (chosenAttack.type === "aoe") {
-    const msg = chosenAttack.resolve(defendingTeam, attacker);
-    addToLog(msg);
-    renderTeams();
-    switchTurn();
-  } else {
-    const targetName = prompt(`Choose a target:\n${defendingTeam.filter(c => c.currentHP > 0).map(c => c.name).join(", ")}\nType 'cancel' to cancel.`);
-    if (!targetName || targetName.toLowerCase() === "cancel") {
-      addToLog(`${currentPlayer} canceled target selection.`);
-      promptAttack(attacker, defendingTeam);
-      return;
-    }
+// Show target buttons
+function showTargetButtons(attacker, attack) {
+  actionDiv.innerHTML = "";
+  const opponentTeam = getOpponentTeam(currentPlayer).filter(c => c.currentHP > 0);
 
-    const target = defendingTeam.find(c => c.name.toLowerCase() === targetName.toLowerCase());
-    if (!target) {
-      alert("Invalid target, try again.");
-      promptAttack(attacker, defendingTeam);
-      return;
-    }
+  const targetTitle = document.createElement("p");
+  targetTitle.textContent = `Choose a target for ${attack.name}:`;
+  actionDiv.appendChild(targetTitle);
 
-    const msg = chosenAttack.resolve(target, attacker, defendingTeam);
-    addToLog(msg);
-    renderTeams();
-    switchTurn();
-  }
+  opponentTeam.forEach(t => {
+    const btn = document.createElement("button");
+    btn.textContent = t.name;
+    btn.onclick = () => resolveAttack(attacker, t, attack);
+    actionDiv.appendChild(btn);
+  });
+
+  // Cancel button
+  const cancelBtn = document.createElement("button");
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.onclick = () => showAttackButtons(attacker);
+  actionDiv.appendChild(cancelBtn);
+}
+
+// Resolve attack
+function resolveAttack(attacker, target, attack) {
+  // For now: random damage based on simple example, you can integrate specific logic per attack
+  let dmg = Math.floor(Math.random() * 20) + 5; // 5-24 damage
+  target.currentHP -= dmg;
+  if (target.currentHP < 0) target.currentHP = 0;
+
+  addToLog(`${attacker.name} used <strong>${attack.name}</strong> on ${target.name} for ${dmg} damage!`);
+
+  renderTeams();
+  switchTurn();
 }
 
 // Restart
@@ -216,6 +225,7 @@ restartBtn.addEventListener("click", () => {
   logDiv.innerHTML = "";
   p1Div.innerHTML = "";
   p2Div.innerHTML = "";
+  actionDiv.innerHTML = "";
 
   historyBtn.style.display = "none";
   restartBtn.style.display = "none";
