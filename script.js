@@ -22,6 +22,11 @@ const p1Input = document.getElementById("p1-name");
 const p2Input = document.getElementById("p2-name");
 const firstTurnSelect = document.getElementById("first-turn");
 
+// Buttons
+const startBtn = document.getElementById("start-btn");
+const restartBtn = document.getElementById("restart-btn");
+const historyBtn = document.getElementById("history-btn");
+
 // Update dropdown dynamically
 function updateFirstTurnOptions() {
   const p1Name = p1Input.value || "Player 1";
@@ -38,8 +43,12 @@ p1Input.addEventListener("input", updateFirstTurnOptions);
 p2Input.addEventListener("input", updateFirstTurnOptions);
 updateFirstTurnOptions();
 
+// Hide battle buttons until battle starts
+historyBtn.style.display = "none";
+restartBtn.style.display = "none";
+
 // Start button
-document.getElementById("start-btn").addEventListener("click", () => {
+startBtn.addEventListener("click", () => {
   const p1 = p1Input.value || "Player 1";
   const p2 = p2Input.value || "Player 2";
   const teamSize = parseInt(document.getElementById("team-size").value);
@@ -59,6 +68,10 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
   document.getElementById("main-menu").classList.add("hidden");
   document.getElementById("battle-screen").classList.remove("hidden");
+
+  // Show buttons now that the battle has started
+  historyBtn.style.display = "inline-block";
+  restartBtn.style.display = "inline-block";
 
   const p1Div = document.getElementById("player1-team");
   const p2Div = document.getElementById("player2-team");
@@ -88,13 +101,23 @@ document.getElementById("start-btn").addEventListener("click", () => {
 });
 
 // Restart
-document.getElementById("restart-btn").addEventListener("click", () => {
+restartBtn.addEventListener("click", () => {
   const confirmRestart = confirm("Are you sure you want to restart? This will return you to the main menu.");
   if (!confirmRestart) return;
 
   document.getElementById("battle-screen").classList.add("hidden");
   document.getElementById("main-menu").classList.remove("hidden");
+
   document.getElementById("battle-log").innerHTML = "";
   document.getElementById("player1-team").innerHTML = "";
   document.getElementById("player2-team").innerHTML = "";
+
+  // Hide buttons again when returning to main menu
+  historyBtn.style.display = "none";
+  restartBtn.style.display = "none";
+});
+
+// Battle History button (placeholder for now)
+historyBtn.addEventListener("click", () => {
+  alert("Battle history feature coming soon!");
 });
