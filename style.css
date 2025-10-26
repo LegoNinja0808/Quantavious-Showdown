@@ -1,5 +1,5 @@
 .hidden {
-  display: none; !important;
+  display: none !important;
 }
 
 body {
@@ -60,7 +60,7 @@ button:hover {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding-bottom: 60px; /* space for buttons */
+  padding-bottom: 80px; /* space for buttons */
 }
 
 /* Battle text area */
@@ -99,5 +99,32 @@ button:hover {
 #battle-screen.visible button:hover,
 #battle-screen:not(.hidden) button:hover {
   background: white;
+  color: black;
+}
+
+/* ---- Action Buttons (Character / Attack / Target) ---- */
+#action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+#action-buttons button {
+  display: block;          /* stack vertically */
+  width: 220px;            /* bigger than main buttons */
+  padding: 12px 15px;
+  margin: 6px 0;           /* space between buttons */
+  font-size: 16px;         /* bigger text */
+  border-radius: 8px;
+  border: 2px solid white;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#action-buttons button:hover {
+  background-color: white;
   color: black;
 }
