@@ -89,6 +89,9 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
 // Restart
 document.getElementById("restart-btn").addEventListener("click", () => {
+  const confirmRestart = confirm("Are you sure you want to restart? This will return you to the main menu.");
+  if (!confirmRestart) return;
+
   document.getElementById("battle-screen").classList.add("hidden");
   document.getElementById("main-menu").classList.remove("hidden");
   document.getElementById("battle-log").innerHTML = "";
