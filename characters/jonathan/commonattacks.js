@@ -1,10 +1,19 @@
 export default [
   {
     name: "Chomp & Crunch",
-    description: "Deals 10 damage per character on the enemy's team to one enemy."
+    type: "aoe",
+    damage: 10,
+    resolve: function(targets) {
+      targets.forEach(t => t.currentHP -= this.damage);
+      return `Chomp & Crunch hits all enemies for ${this.damage} damage each!`;
+    }
   },
   {
     name: "Block Next Attack",
-    description: "Eats the next attack and takes no damage (can only be used once per game)."
+    type: "once",
+    resolve: function(self) {
+      self.blockNext = true;
+      return `${self.name} will block the next attack!`;
+    }
   }
 ];
