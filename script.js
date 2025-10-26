@@ -97,13 +97,22 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>`).join('');
   }
 
-  // Add to log (only popup history, not on battle screen)
-function addToLog(msg) {
-  const historyP = document.createElement("p");
-  historyP.innerHTML = msg;
-  historyLogDiv.appendChild(historyP);
-  historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
-}
+  // --- Battle History Logging ---
+  function cleanExtraHistory() {
+    // Remove any <p> accidentally inside the battle screen (outside modal)
+    const battleScreen = document.getElementById("battle-screen");
+    const strayLogs = battleScreen.querySelectorAll(":scope > p");
+    strayLogs.forEach(el => el.remove());
+  }
+
+  function addToLog(msg) {
+    const historyP = document.createElement("p");
+    historyP.innerHTML = msg;
+    historyLogDiv.appendChild(historyP);
+    historyLogDiv.scrollTop = historyLogDiv.scrollHeight;
+
+    cleanExtraHistory(); // ensures no logs show on main battle screen
+  }
 
   // Update current turn display
   function updateCurrentTurnDisplay() {
