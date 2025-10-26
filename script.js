@@ -6,6 +6,18 @@ import Jonathan from './characters/jonathan/jonathan.js';
 
 const allCharacters = [Johan, Micah, Arman, Brody, Jonathan];
 
+function getRandomCharacters(count) {
+  const team = [];
+  for (let i = 0; i < count; i++) {
+    const randomIndex = Math.floor(Math.random() * allCharacters.length);
+    // Clone the character so HP is separate per instance
+    const char = JSON.parse(JSON.stringify(allCharacters[randomIndex]));
+    char.id = `${char.name}-${Date.now()}-${i}`; // unique id
+    team.push(char);
+  }
+  return team;
+}
+
 const p1Input = document.getElementById("p1-name");
 const p2Input = document.getElementById("p2-name");
 const firstTurnSelect = document.getElementById("first-turn");
