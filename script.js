@@ -18,7 +18,7 @@ const allCharacters = [
   { info: Jonathan, attacks: jonathanAttacks }
 ];
 
-// Inputs & buttons
+// DOM Elements
 const p1Input = document.getElementById("p1-name");
 const p2Input = document.getElementById("p2-name");
 const firstTurnSelect = document.getElementById("first-turn");
@@ -29,22 +29,22 @@ const historyBtn = document.getElementById("history-btn");
 const p1Div = document.getElementById("player1-team");
 const p2Div = document.getElementById("player2-team");
 const logDiv = document.getElementById("battle-log");
+const actionDiv = document.getElementById("action-buttons");
+const currentTurnDiv = document.getElementById("current-turn");
 
-// Create action buttons container
-const actionDiv = document.createElement("div");
-actionDiv.id = "action-buttons";
-document.getElementById("battle-screen").appendChild(actionDiv);
+// Hide battle buttons initially
+historyBtn.style.display = "none";
+restartBtn.style.display = "none";
 
-// Current turn display
-const currentTurnDiv = document.createElement("div");
-currentTurnDiv.id = "current-turn";
-document.getElementById("battle-screen").prepend(currentTurnDiv);
+// Player teams & current turn
+let player1Team = [];
+let player2Team = [];
+let currentPlayer = "";
 
-// Update dropdown dynamically
+// Update "Who Goes First" dropdown
 function updateFirstTurnOptions() {
   const p1Name = p1Input.value || "Player 1";
   const p2Name = p2Input.value || "Player 2";
-
   firstTurnSelect.innerHTML = `
     <option value="random">Random</option>
     <option value="player1">${p1Name}</option>
@@ -55,44 +55,7 @@ p1Input.addEventListener("input", updateFirstTurnOptions);
 p2Input.addEventListener("input", updateFirstTurnOptions);
 updateFirstTurnOptions();
 
-// Hide battle buttons until battle starts
-historyBtn.style.display = "none";
-restartBtn.style.display = "none";
-
-let player1Team = [];
-let player2Team = [];
-let currentPlayer = "";
-
-// Create random teams
-function getRandomCharacters(count) {
-  const team = [];
-  for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * allCharacters.length);
-    const charData = allCharacters[randomIndex];
-    const char = JSON.parse(JSON.stringify(charData.info));
-    char.attacks = charData.attacks;
-    char.id = `${char.name}-${Date.now()}-${i}`;
-    team.push(char);
-  }
-  return team;
-}
-
-// Render teams
-function renderTeams() {
-  p1Div.innerHTML = `<h3>${p1Input.value || "Player 1"}</h3>` + player1Team.map(c => `
-    <div class="character-card" id="${c.id}">
-      <strong>${c.name}</strong><br>
-      HP: <span class="hp">${c.currentHP}</span>
-    </div>`).join('');
-
-  p2Div.innerHTML = `<h3>${p2Input.value || "Player 2"}</h3>` + player2Team.map(c => `
-    <div class="character-card" id="${c.id}">
-      <strong>${c.name}</strong><br>
-      HP: <span class="hp">${c.currentHP}</span>
-    </div>`).join('');
-}
-
-// Add to log
+// Add message to log
 function addToLog(msg) {
   const p = document.createElement("p");
   p.innerHTML = msg;
@@ -105,37 +68,39 @@ function updateCurrentTurnDisplay() {
   currentTurnDiv.innerHTML = `<strong>${currentPlayer}'s turn!</strong>`;
 }
 
-// Get teams
+// Generate random teams
+function getRandomCharacters(count) {
+  const team = [];
+  for (let i = 0; i < count; i++) {
+    const charData = allCharacters[Math.floor(Math.random() * allCharacters.length)];
+    const char = JSON.parse(JSON.stringify(charData.info));
+    char.attacks = charData.attacks;
+    char.id = `${char.name}-${Date.now()}-${i}`;
+    team.push(char);
+  }
+  return team;
+}
+
+// Render teams
+function renderTeams() {
+  p1Div.innerHTML = `<h3>${p1Input.value || "Player 1"}</h3>` +
+    player1Team.map(c => `<div class="character-card" id="${c.id}">
+      <strong>${c.name}</strong><br>HP: <span class="hp">${c.currentHP}</span>
+    </div>`).join('');
+
+  p2Div.innerHTML = `<h3>${p2Input.value || "Player 2"}</h3>` +
+    player2Team.map(c => `<div class="character-card" id="${c.id}">
+      <strong>${c.name}</strong><br>HP: <span class="hp">${c.currentHP}</span>
+    </div>`).join('');
+}
+
+// Get player's team
 function getTeam(player) {
   return player === (p1Input.value || "Player 1") ? player1Team : player2Team;
 }
 function getOpponentTeam(player) {
   return player === (p1Input.value || "Player 1") ? player2Team : player1Team;
 }
-
-// Start battle
-startBtn.addEventListener("click", () => {
-  const teamSize = parseInt(document.getElementById("team-size").value);
-  const turnChoice = firstTurnSelect.value;
-
-  player1Team = getRandomCharacters(teamSize);
-  player2Team = getRandomCharacters(teamSize);
-
-  if (turnChoice === "random") currentPlayer = Math.random() < 0.5 ? (p1Input.value || "Player 1") : (p2Input.value || "Player 2");
-  else if (turnChoice === "player1") currentPlayer = p1Input.value || "Player 1";
-  else currentPlayer = p2Input.value || "Player 2";
-
-  document.getElementById("main-menu").classList.add("hidden");
-  document.getElementById("battle-screen").classList.remove("hidden");
-
-  historyBtn.style.display = "inline-block";
-  restartBtn.style.display = "inline-block";
-
-  renderTeams();
-  addToLog(`<strong>${currentPlayer}</strong> goes first!`);
-  updateCurrentTurnDisplay();
-  nextTurn();
-});
 
 // Check game over
 function checkGameOver() {
@@ -159,22 +124,18 @@ function switchTurn() {
   nextTurn();
 }
 
-// Next turn: choose attacker
+// Next turn: select attacker
 function nextTurn() {
   if (checkGameOver()) return;
-
-  const team = getTeam(currentPlayer);
-  const aliveCharacters = team.filter(c => c.currentHP > 0);
-
-  if (aliveCharacters.length === 0) {
+  const team = getTeam(currentPlayer).filter(c => c.currentHP > 0);
+  if (team.length === 0) {
     switchTurn();
     return;
   }
-
-  showCharacterSelection(aliveCharacters);
+  showCharacterSelection(team);
 }
 
-// Show alive characters for player to choose
+// Show alive characters to choose
 function showCharacterSelection(aliveCharacters) {
   actionDiv.innerHTML = "";
   const title = document.createElement("p");
@@ -203,7 +164,6 @@ function showAttackButtons(attacker) {
     actionDiv.appendChild(btn);
   });
 
-  // Cancel → back to character selection
   const cancelBtn = document.createElement("button");
   cancelBtn.textContent = "Cancel";
   cancelBtn.onclick = () => showCharacterSelection(getTeam(currentPlayer).filter(c => c.currentHP > 0));
@@ -213,50 +173,20 @@ function showAttackButtons(attacker) {
 // Show target buttons
 function showTargetButtons(attacker, attack) {
   actionDiv.innerHTML = "";
-  const opponentTeam = getOpponentTeam(currentPlayer).filter(c => c.currentHP > 0);
+  const opponents = getOpponentTeam(currentPlayer).filter(c => c.currentHP > 0);
 
   const title = document.createElement("p");
   title.textContent = `Choose a target for ${attack.name}:`;
   actionDiv.appendChild(title);
 
-  opponentTeam.forEach(t => {
+  opponents.forEach(t => {
     const btn = document.createElement("button");
     btn.textContent = t.name;
     btn.onclick = () => resolveAttack(attacker, t, attack);
     actionDiv.appendChild(btn);
   });
 
-  // Cancel → back to attack selection
   const cancelBtn = document.createElement("button");
   cancelBtn.textContent = "Cancel";
   cancelBtn.onclick = () => showAttackButtons(attacker);
-  actionDiv.appendChild(cancelBtn);
-}
-
-// Resolve attack (placeholder logic)
-function resolveAttack(attacker, target, attack) {
-  const dmg = Math.floor(Math.random() * 20) + 5;
-  target.currentHP -= dmg;
-  if (target.currentHP < 0) target.currentHP = 0;
-
-  addToLog(`${attacker.name} used <strong>${attack.name}</strong> on ${target.name} for ${dmg} damage!`);
-
-  renderTeams();
-  switchTurn();
-}
-
-// Restart
-restartBtn.addEventListener("click", () => {
-  const confirmRestart = confirm("Are you sure you want to restart? This will return you to the main menu.");
-  if (!confirmRestart) return;
-
-  document.getElementById("battle-screen").classList.add("hidden");
-  document.getElementById("main-menu").classList.remove("hidden");
-
-  logDiv.innerHTML = "";
-  p1Div.innerHTML = "";
-  p2Div.innerHTML = "";
-  actionDiv.innerHTML = "";
-
-  historyBtn.style.display = "none";
-  restart
+  actionDiv.appendChild
