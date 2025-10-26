@@ -42,22 +42,26 @@
 
   <!-- Battle Screen -->
   <div id="battle-screen" class="hidden">
-    <!-- Current turn display -->
+    <!-- Current Turn Display -->
     <div id="current-turn"></div>
 
     <!-- Battle log -->
     <div id="battle-log"></div>
 
     <!-- Players' characters -->
-    <div id="player1-team" class="team-container"></div>
-    <div id="player2-team" class="team-container"></div>
+    <div id="player1-team"></div>
+    <div id="player2-team"></div>
 
     <!-- Action buttons (for attacks, targets, etc.) -->
-    <div id="action-buttons"></div>
+    <div id="action-buttons">
+      <!-- Dynamically generated buttons will appear here -->
+    </div>
 
     <!-- Bottom buttons (fixed at bottom) -->
-    <button id="history-btn" class="bottom-btn hidden">Battle History</button>
-    <button id="restart-btn" class="bottom-btn hidden">Restart</button>
+    <div id="bottom-buttons">
+      <button id="history-btn">Battle History</button>
+      <button id="restart-btn">Restart</button>
+    </div>
   </div>
 
   <script type="module" src="script.js"></script>
