@@ -1,8 +1,8 @@
-import Johan from './characters/johan.js';
-import Micah from './characters/micah.js';
-import Arman from './characters/arman.js';
-import Brody from './characters/brody.js';
-import Jonathan from './characters/jonathan.js';
+import Johan from './characters/johan/johan.js';
+import Micah from './characters/micah/micah.js';
+import Arman from './characters/arman/arman.js';
+import Brody from './characters/brody/brody.js';
+import Jonathan from './characters/jonathan/jonathan.js';
 
 const allCharacters = [Johan, Micah, Arman, Brody, Jonathan];
 
