@@ -25,18 +25,19 @@ h1 {
 input, select, button {
   background-color: transparent;
   border: 2px solid white;
-  color: black; /* input text color */
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 1rem;
+  color: white; /* Selected value appears white */
 }
 
-/* Fix for <option> text visibility */
+/* Fix dropdown options visibility */
 select option {
-  color: black;   /* ensures option text is visible */
-  background-color: white; /* optional: make dropdown background white */
+  color: black;              /* option text color */
+  background-color: white;   /* option background */
 }
 
+/* Button hover style */
 button:hover {
   background-color: white;
   color: black;
