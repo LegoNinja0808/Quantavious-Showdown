@@ -52,6 +52,7 @@ button:hover {
   display: none;
 }
 
+/* ---- Battle Screen Layout ---- */
 #battle-screen {
   position: relative;
   min-height: 100vh;
@@ -62,12 +63,15 @@ button:hover {
   padding-bottom: 60px; /* space for buttons */
 }
 
+/* Battle text area */
 #battle-log {
   margin-top: 20px;
   text-align: center;
 }
 
-#battle-screen button {
+/* Only style buttons INSIDE battle screen */
+#battle-screen.visible button,
+#battle-screen:not(.hidden) button {
   position: fixed;
   bottom: 20px;
   padding: 10px 20px;
@@ -80,15 +84,20 @@ button:hover {
   transition: background 0.3s;
 }
 
-#history-btn {
+/* Place buttons on opposite corners */
+#battle-screen.visible #history-btn,
+#battle-screen:not(.hidden) #history-btn {
   left: 20px;
 }
 
-#restart-btn {
+#battle-screen.visible #restart-btn,
+#battle-screen:not(.hidden) #restart-btn {
   right: 20px;
 }
 
-#battle-screen button:hover {
+/* Hover effect */
+#battle-screen.visible button:hover,
+#battle-screen:not(.hidden) button:hover {
   background: white;
   color: black;
 }
