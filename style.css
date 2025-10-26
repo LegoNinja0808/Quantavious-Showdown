@@ -2,9 +2,12 @@ body {
   background-color: black;
   color: white;
   font-family: 'Arial', sans-serif;
-  text-align: center;
   margin: 0;
   padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -14,7 +17,11 @@ h1 {
 }
 
 .menu-screen {
-  margin-top: 60px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center vertically */
+  align-items: center; /* center horizontally */
 }
 
 .input-group {
@@ -24,10 +31,10 @@ h1 {
 input, select, button {
   background-color: transparent;
   border: 2px solid white;
-  color: white;
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 1rem;
+  color: black; /* Force black text */
 }
 
 button:hover {
