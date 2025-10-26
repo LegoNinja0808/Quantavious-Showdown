@@ -1,8 +1,30 @@
+const p1Input = document.getElementById("p1-name");
+const p2Input = document.getElementById("p2-name");
+const firstTurnSelect = document.getElementById("first-turn");
+
+function updateFirstTurnOptions() {
+  const p1Name = p1Input.value || "Player 1";
+  const p2Name = p2Input.value || "Player 2";
+
+  firstTurnSelect.innerHTML = `
+    <option value="random">Random</option>
+    <option value="player1">${p1Name}</option>
+    <option value="player2">${p2Name}</option>
+  `;
+}
+
+// Update options whenever the user types in a name
+p1Input.addEventListener("input", updateFirstTurnOptions);
+p2Input.addEventListener("input", updateFirstTurnOptions);
+
+// Initialize options on page load
+updateFirstTurnOptions();
+
 document.getElementById("start-btn").addEventListener("click", () => {
-  const p1 = document.getElementById("p1-name").value || "Player 1";
-  const p2 = document.getElementById("p2-name").value || "Player 2";
+  const p1 = p1Input.value || "Player 1";
+  const p2 = p2Input.value || "Player 2";
   const teamSize = parseInt(document.getElementById("team-size").value);
-  const turnChoice = document.getElementById("first-turn").value;
+  const turnChoice = firstTurnSelect.value;
 
   let firstTurn;
   if (turnChoice === "random") {
