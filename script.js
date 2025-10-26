@@ -34,37 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const actionDiv = document.getElementById("action-buttons");
   const currentTurnDiv = document.getElementById("current-turn");
 
-  // Battle History Popup
-  const historyPopup = document.createElement("div");
-  historyPopup.id = "history-popup";
-  historyPopup.style.display = "none";
-  historyPopup.style.position = "fixed";
-  historyPopup.style.top = "50%";
-  historyPopup.style.left = "50%";
-  historyPopup.style.transform = "translate(-50%, -50%)";
-  historyPopup.style.backgroundColor = "black";
-  historyPopup.style.color = "white";
-  historyPopup.style.border = "2px solid white";
-  historyPopup.style.padding = "20px";
-  historyPopup.style.zIndex = "100";
-  historyPopup.style.maxHeight = "80vh";
-  historyPopup.style.overflowY = "auto";
-  historyPopup.style.width = "300px";
-  historyPopup.innerHTML = `
-    <h3>Battle History</h3>
-    <div id="history-log"></div>
-    <button id="close-history">Close</button>
-  `;
-  document.body.appendChild(historyPopup);
+  // Battle History Modal elements from HTML
+  const historyModal = document.getElementById("history-modal");
   const historyLogDiv = document.getElementById("history-log");
   const closeHistoryBtn = document.getElementById("close-history");
 
   closeHistoryBtn.addEventListener("click", () => {
-    historyPopup.style.display = "none";
+    historyModal.classList.add("hidden");
   });
 
   historyBtn.addEventListener("click", () => {
-    historyPopup.style.display = "block";
+    historyModal.classList.remove("hidden");
   });
 
   // Hide battle buttons initially
@@ -75,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let player2Team = [];
   let currentPlayer = "";
 
-  // Update dropdown dynamically
+  // Update "Who Goes First" dropdown dynamically
   function updateFirstTurnOptions() {
     const p1Name = p1Input.value || "Player 1";
     const p2Name = p2Input.value || "Player 2";
@@ -117,14 +97,14 @@ document.addEventListener("DOMContentLoaded", () => {
         HP: <span class="hp">${c.currentHP}</span>
       </div>`).join('');
   }
-  // Add to log
+
+  // Add message to battle log & history modal
   function addToLog(msg) {
     const p = document.createElement("p");
     p.innerHTML = msg;
     logDiv.appendChild(p);
     logDiv.scrollTop = logDiv.scrollHeight;
 
-    // Also add to history popup
     const historyP = document.createElement("p");
     historyP.innerHTML = msg;
     historyLogDiv.appendChild(historyP);
@@ -140,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function getTeam(player) {
     return player === (p1Input.value || "Player 1") ? player1Team : player2Team;
   }
-
   function getOpponentTeam(player) {
     return player === (p1Input.value || "Player 1") ? player2Team : player1Team;
   }
@@ -177,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function checkGameOver() {
     const p1Alive = player1Team.some(c => c.currentHP > 0);
     const p2Alive = player2Team.some(c => c.currentHP > 0);
-
     if (!p1Alive || !p2Alive) {
       addToLog(`<strong>Game Over!</strong> ${p1Alive ? p1Input.value || "Player 1" : p2Input.value || "Player 2"} wins!`);
       actionDiv.innerHTML = "";
@@ -226,7 +204,8 @@ document.addEventListener("DOMContentLoaded", () => {
       actionDiv.appendChild(btn);
     });
   }
-// Show attack buttons
+
+  // Show attack buttons
   function showAttackButtons(attacker) {
     actionDiv.innerHTML = "";
     const title = document.createElement("p");
@@ -240,7 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
       actionDiv.appendChild(btn);
     });
 
-    // Cancel button
     const cancelBtn = document.createElement("button");
     cancelBtn.textContent = "Cancel";
     cancelBtn.onclick = () => showCharacterSelection(getTeam(currentPlayer).filter(c => c.currentHP > 0));
@@ -263,33 +241,22 @@ document.addEventListener("DOMContentLoaded", () => {
       actionDiv.appendChild(btn);
     });
 
-    // Cancel → back to attack selection
     const cancelBtn = document.createElement("button");
     cancelBtn.textContent = "Cancel";
     cancelBtn.onclick = () => showAttackButtons(attacker);
     actionDiv.appendChild(cancelBtn);
   }
 
-  // Resolve attack (placeholder)
+  // Resolve attack
   function resolveAttack(attacker, target, attack) {
     const dmg = Math.floor(Math.random() * 20) + 5;
     target.currentHP -= dmg;
     if (target.currentHP < 0) target.currentHP = 0;
 
     addToLog(`${attacker.name} used <strong>${attack.name}</strong> on ${target.name} for ${dmg} damage!`);
-
     renderTeams();
     switchTurn();
   }
-
-  // Battle History popup
-  historyBtn.addEventListener("click", () => {
-    historyPopup.classList.remove("hidden");
-  });
-
-  closeHistoryBtn.addEventListener("click", () => {
-    historyPopup.classList.add("hidden");
-  });
 
   // Restart
   restartBtn.addEventListener("click", () => {
@@ -309,4 +276,4 @@ document.addEventListener("DOMContentLoaded", () => {
     restartBtn.style.display = "none";
   });
 
-}); // End of DOMContentLoaded
+});
