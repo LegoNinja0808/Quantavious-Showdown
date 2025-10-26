@@ -30,9 +30,15 @@ const p1Div = document.getElementById("player1-team");
 const p2Div = document.getElementById("player2-team");
 const logDiv = document.getElementById("battle-log");
 
-const actionDiv = document.createElement("div"); // Attack/target buttons
+// Create action buttons container
+const actionDiv = document.createElement("div");
 actionDiv.id = "action-buttons";
 document.getElementById("battle-screen").appendChild(actionDiv);
+
+// Current turn display
+const currentTurnDiv = document.createElement("div");
+currentTurnDiv.id = "current-turn";
+document.getElementById("battle-screen").prepend(currentTurnDiv);
 
 // Update dropdown dynamically
 function updateFirstTurnOptions() {
@@ -49,6 +55,7 @@ p1Input.addEventListener("input", updateFirstTurnOptions);
 p2Input.addEventListener("input", updateFirstTurnOptions);
 updateFirstTurnOptions();
 
+// Hide battle buttons until battle starts
 historyBtn.style.display = "none";
 restartBtn.style.display = "none";
 
@@ -93,6 +100,11 @@ function addToLog(msg) {
   logDiv.scrollTop = logDiv.scrollHeight;
 }
 
+// Update current turn display
+function updateCurrentTurnDisplay() {
+  currentTurnDiv.innerHTML = `<strong>${currentPlayer}'s turn!</strong>`;
+}
+
 // Get teams
 function getTeam(player) {
   return player === (p1Input.value || "Player 1") ? player1Team : player2Team;
@@ -121,6 +133,7 @@ startBtn.addEventListener("click", () => {
 
   renderTeams();
   addToLog(`<strong>${currentPlayer}</strong> goes first!`);
+  updateCurrentTurnDisplay();
   nextTurn();
 });
 
@@ -141,7 +154,8 @@ function switchTurn() {
   const p1Name = p1Input.value || "Player 1";
   const p2Name = p2Input.value || "Player 2";
   currentPlayer = currentPlayer === p1Name ? p2Name : p1Name;
-  addToLog(`<strong>${currentPlayer}'s</strong> turn!`);
+  addToLog(`It's now <strong>${currentPlayer}'s</strong> turn!`);
+  updateCurrentTurnDisplay();
   nextTurn();
 }
 
@@ -245,5 +259,4 @@ restartBtn.addEventListener("click", () => {
   actionDiv.innerHTML = "";
 
   historyBtn.style.display = "none";
-  restartBtn.style.display = "none";
-});
+  restart
