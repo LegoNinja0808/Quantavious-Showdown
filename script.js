@@ -226,3 +226,87 @@ document.addEventListener("DOMContentLoaded", () => {
       actionDiv.appendChild(btn);
     });
   }
+// Show attack buttons
+  function showAttackButtons(attacker) {
+    actionDiv.innerHTML = "";
+    const title = document.createElement("p");
+    title.textContent = `${currentPlayer}, choose an attack for ${attacker.name}:`;
+    actionDiv.appendChild(title);
+
+    attacker.attacks.forEach(a => {
+      const btn = document.createElement("button");
+      btn.textContent = a.name;
+      btn.onclick = () => showTargetButtons(attacker, a);
+      actionDiv.appendChild(btn);
+    });
+
+    // Cancel button
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.onclick = () => showCharacterSelection(getTeam(currentPlayer).filter(c => c.currentHP > 0));
+    actionDiv.appendChild(cancelBtn);
+  }
+
+  // Show target buttons
+  function showTargetButtons(attacker, attack) {
+    actionDiv.innerHTML = "";
+    const opponentTeam = getOpponentTeam(currentPlayer).filter(c => c.currentHP > 0);
+
+    const title = document.createElement("p");
+    title.textContent = `Choose a target for ${attack.name}:`;
+    actionDiv.appendChild(title);
+
+    opponentTeam.forEach(t => {
+      const btn = document.createElement("button");
+      btn.textContent = t.name;
+      btn.onclick = () => resolveAttack(attacker, t, attack);
+      actionDiv.appendChild(btn);
+    });
+
+    // Cancel → back to attack selection
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.onclick = () => showAttackButtons(attacker);
+    actionDiv.appendChild(cancelBtn);
+  }
+
+  // Resolve attack (placeholder)
+  function resolveAttack(attacker, target, attack) {
+    const dmg = Math.floor(Math.random() * 20) + 5;
+    target.currentHP -= dmg;
+    if (target.currentHP < 0) target.currentHP = 0;
+
+    addToLog(`${attacker.name} used <strong>${attack.name}</strong> on ${target.name} for ${dmg} damage!`);
+
+    renderTeams();
+    switchTurn();
+  }
+
+  // Battle History popup
+  historyBtn.addEventListener("click", () => {
+    historyPopup.classList.remove("hidden");
+  });
+
+  closeHistoryBtn.addEventListener("click", () => {
+    historyPopup.classList.add("hidden");
+  });
+
+  // Restart
+  restartBtn.addEventListener("click", () => {
+    const confirmRestart = confirm("Are you sure you want to restart? This will return you to the main menu.");
+    if (!confirmRestart) return;
+
+    document.getElementById("battle-screen").classList.add("hidden");
+    document.getElementById("main-menu").classList.remove("hidden");
+
+    logDiv.innerHTML = "";
+    historyLogDiv.innerHTML = "";
+    p1Div.innerHTML = "";
+    p2Div.innerHTML = "";
+    actionDiv.innerHTML = "";
+
+    historyBtn.style.display = "none";
+    restartBtn.style.display = "none";
+  });
+
+}); // End of DOMContentLoaded
